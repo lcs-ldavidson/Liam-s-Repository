@@ -49,24 +49,6 @@ class GameScene: SKScene {
     
     override func update(_ currentTime: TimeInterval) {
         // this method is called before each frame is rendered
-        
-        func createEnemy() {
-            //code goes here
-            
-            let sprite = SKSpriteNode(imageNamed: "mine")
-            sprite.position = CGPoint(x: 1200, y: Int.random(in: -350...350))
-            sprite.name = "enemy"
-            sprite.zPosition = 1
-            addChild(sprite)
-            
-            sprite.physicsBody = SKPhysicsBody(texture: sprite.texture!, size: sprite.size)
-            sprite.physicsBody?.velocity = CGVector(dx: -500, dy: 0)
-            sprite.physicsBody?.linearDamping = 0
-            
-        }
-        
-        
-        
         if let accelerometerData =
             motionManager.accelerometerData {
             let changeX =
@@ -76,6 +58,21 @@ class GameScene: SKScene {
             player.position.x -= changeX
             player.position.y += changeY
         }
+        
+    }
+    
+    func createEnemy() {
+        //code goes here
+        
+        let sprite = SKSpriteNode(imageNamed: "mine")
+        sprite.position = CGPoint(x: 1200, y: Int.random(in: -350...350))
+        sprite.name = "enemy"
+        sprite.zPosition = 1
+        addChild(sprite)
+        
+        sprite.physicsBody = SKPhysicsBody(texture: sprite.texture!, size: sprite.size)
+        sprite.physicsBody?.velocity = CGVector(dx: -500, dy: 0)
+        sprite.physicsBody?.linearDamping = 0
         
     }
 }
