@@ -111,13 +111,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             player.position.y = 300
         }
         
-        
-//        if player.parent != nil {
-//            Jet?.position = player.position
-//            Jet?.zPosition = 0.5
-//            addChild(Jet!)
-//        }
-        
+        Jet?.particlePosition.x = player.position.x - 45
+        Jet?.particlePosition.y = player.position.y - 10
         
     }
     
@@ -157,7 +152,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             addChild(particles)
         }
         
-//        Jet?.removeFromParent()
+        Jet?.removeFromParent()
         player.removeFromParent()
         let sound = SKAction.playSoundFileNamed("explosion.wav", waitForCompletion: false)
         run(sound)
