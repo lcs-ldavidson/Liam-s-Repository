@@ -10,18 +10,32 @@ import SpriteKit
 import CoreMotion
 
 @objcMembers
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     
     let player = SKSpriteNode(imageNamed: "player-submarine.png")
     let motionManager = CMMotionManager()
     var gameTimer: Timer?
+    let scoreLabel = SKLabelNode(fontNamed: "AvenirNextCondensed-Bold")
+    var score = 0 {
+        didSet {
+            scoreLabel.text = "SCORE: \(score)"
+        }
+    }
+    let music = SKAudioNode(fileNamed: "cyborg-ninja.mp3")
+//    let Jet = SKEmitterNode(fileNamed: "JetStream.sks")
+    
+    
+    
+    
     
     override func didMove(to view: SKView) {
         // this method is called when your game scene is ready to run
         
+        //background
         let background = SKSpriteNode(imageNamed: "water.jpg")
         background.zPosition = -1
         addChild(background)
+        
         //bubbles
         if let particles = SKEmitterNode(fileNamed: "Bubbles") {
             particles.advanceSimulationTime(10)
@@ -29,13 +43,25 @@ class GameScene: SKScene {
             addChild(particles)
         }
         
+        //player
         player.position.x = -400
         player.zPosition = 1
         addChild(player)
+        player.physicsBody = SKPhysicsBody (texture: player.texture!, size: player.size)
+        player.physicsBody?.categoryBitMask = 1
         
         motionManager.startAccelerometerUpdates()
         
         gameTimer = Timer.scheduledTimer(timeInterval: 0.35, target: self, selector: #selector(createEnemy), userInfo: nil, repeats: true)
+        
+        physicsWorld.contactDelegate = self
+        
+        scoreLabel.zPosition = 2
+        scoreLabel.position.y = 300
+        addChild(scoreLabel)
+        score = 0
+        
+        addChild(music)
         
     }
     
@@ -49,15 +75,46 @@ class GameScene: SKScene {
     
     override func update(_ currentTime: TimeInterval) {
         // this method is called before each frame is rendered
+        
+        for node in children {
+            if node.position.x < -700 {
+                node.removeFromParent()
+            }
+        }
+        
         if let accelerometerData =
             motionManager.accelerometerData {
             let changeX =
-            CGFloat(accelerometerData.acceleration.y) * 100
+                CGFloat(accelerometerData.acceleration.y) * 100
             let changeY =
-            CGFloat(accelerometerData.acceleration.x) * 100
+                CGFloat(accelerometerData.acceleration.x) * 100
             player.position.x -= changeX
             player.position.y += changeY
         }
+        
+        if player.parent != nil {
+            score += 1
+        }
+        
+        if player.position.x < -400 {
+            player.position.x = -400
+        } else if player.position.x > 400 {
+            player.position.x = 400
+        }
+        
+        if player.position.y < -300 {
+            player.position.y = -300
+        } else if player.position.y > 300 {
+            player.position.y = 300
+        }
+        
+        
+//        if player.parent != nil {
+//            Jet?.position = player.position
+//            Jet?.zPosition = 0.5
+//            addChild(Jet!)
+//        }
+        
         
     }
     
@@ -74,6 +131,51 @@ class GameScene: SKScene {
         sprite.physicsBody?.velocity = CGVector(dx: -500, dy: 0)
         sprite.physicsBody?.linearDamping = 0
         
+        sprite.physicsBody?.contactTestBitMask = 1
+        sprite.physicsBody?.categoryBitMask = 0
+        
     }
+    
+    func didBegin(_ contact: SKPhysicsContact) {
+        guard let nodeA = contact.bodyA.node else { return }
+        guard let nodeB = contact.bodyB.node else { return }
+        
+        if nodeA == player {
+            playerHit(nodeB)
+        } else {
+            playerHit(nodeA)
+        }
+    }
+    
+    func playerHit(_ node: SKNode) {
+        if let particles = SKEmitterNode(fileNamed: "Explosion.sks") {
+            particles.position = player.position
+            particles.zPosition = 3
+            addChild(particles)
+        }
+        
+//        Jet?.removeFromParent()
+        player.removeFromParent()
+        let sound = SKAction.playSoundFileNamed("explosion.wav", waitForCompletion: false)
+        run(sound)
+        music.removeFromParent()
+        
+        let gameOver = SKSpriteNode(imageNamed: "gameOver-3")
+        gameOver.zPosition = 10
+        addChild(gameOver)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            if let scene = GameScene(fileNamed: "GameScene") {
+                // make it stretch to fill all available space
+                scene.scaleMode = .aspectFill
+                // present it immediately
+                self.view?.presentScene(scene)
+            }
+        }
+    }
+    
+    
+    
+    
 }
 
