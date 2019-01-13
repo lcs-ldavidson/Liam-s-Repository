@@ -22,7 +22,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     let music = SKAudioNode(fileNamed: "cyborg-ninja.mp3")
-//    let Jet = SKEmitterNode(fileNamed: "JetStream.sks")
+    let Jet = SKEmitterNode(fileNamed: "JetStream.sks")
     
     
     
@@ -45,7 +45,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //player
         player.position.x = -400
-        player.zPosition = 1
+        player.zPosition = 2
         addChild(player)
         player.physicsBody = SKPhysicsBody (texture: player.texture!, size: player.size)
         player.physicsBody?.categoryBitMask = 1
@@ -62,6 +62,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         score = 0
         
         addChild(music)
+        
+        Jet?.zPosition = 1
+        addChild(Jet!)
         
     }
     
