@@ -13,6 +13,7 @@ import CoreMotion
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     let player = SKSpriteNode(imageNamed: "player-submarine.png")
+    let torpedo = SKSpriteNode(imageNamed: "Torpedo.png")
     let motionManager = CMMotionManager()
     var gameTimer: Timer?
     let scoreLabel = SKLabelNode(fontNamed: "AvenirNextCondensed-Bold")
@@ -70,6 +71,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // this method is called when the user touches the screen
+        
+//        torpedoLaunch()
+        
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -128,7 +132,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         sprite.physicsBody = SKPhysicsBody(texture: sprite.texture!, size: sprite.size)
         sprite.physicsBody?.velocity = CGVector(dx: -500, dy: 0)
         sprite.physicsBody?.linearDamping = 0
-        
         sprite.physicsBody?.contactTestBitMask = 1
         sprite.physicsBody?.categoryBitMask = 0
         
@@ -137,6 +140,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         guard let nodeA = contact.bodyA.node else { return }
         guard let nodeB = contact.bodyB.node else { return }
+        
         
         if nodeA == player {
             playerHit(nodeB)
@@ -154,6 +158,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         Jet?.removeFromParent()
         player.removeFromParent()
+        
         let sound = SKAction.playSoundFileNamed("explosion.wav", waitForCompletion: false)
         run(sound)
         music.removeFromParent()
@@ -170,6 +175,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.view?.presentScene(scene)
             }
         }
+    }
+    
+    
+    func torpedoLaunch() {
+        
+        //create torpedo
+        if torpedo.parent == nil {
+            
+            torpedo.physicsBody = SKPhysicsBody(texture: torpedo.texture!, size: torpedo.size)
+            torpedo.position.x = player.position.x + 100
+            torpedo.position.y = player.position.y
+            torpedo.physicsBody?.categoryBitMask = 3
+            addChild(torpedo)
+            torpedo.scale(to: CGSize(width: 40, height: 30))
+            torpedo.physicsBody?.velocity = CGVector(dx: 150, dy: 0)
+        }
+        
     }
     
     
