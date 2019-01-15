@@ -72,7 +72,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // this method is called when the user touches the screen
         
-//        torpedoLaunch()
+        torpedoLaunch()
         
     }
     
@@ -84,7 +84,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // this method is called before each frame is rendered
         
         for node in children {
-            if node.position.x < -700 {
+            if node.position.x < -700  {
                 node.removeFromParent()
             }
         }
@@ -118,6 +118,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         Jet?.particlePosition.x = player.position.x - 45
         Jet?.particlePosition.y = player.position.y - 10
         
+        if torpedo.position.x > 700 {
+            torpedo.removeFromParent()
+        }
+        
     }
     
     func createEnemy() {
@@ -144,8 +148,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if nodeA == player {
             playerHit(nodeB)
+        } else if nodeA == torpedo {
+            
         } else {
-            playerHit(nodeA)
+//            playerHit(nodeA)
         }
     }
     
@@ -189,7 +195,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             torpedo.physicsBody?.categoryBitMask = 3
             addChild(torpedo)
             torpedo.scale(to: CGSize(width: 40, height: 30))
-            torpedo.physicsBody?.velocity = CGVector(dx: 150, dy: 0)
+            torpedo.physicsBody?.velocity = CGVector(dx: 300, dy: 0)
         }
         
     }
