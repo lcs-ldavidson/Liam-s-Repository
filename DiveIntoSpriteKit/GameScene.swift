@@ -13,7 +13,7 @@ import CoreMotion
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     let player = SKSpriteNode(imageNamed: "player-submarine.png")
-    let torpedo = SKSpriteNode(imageNamed: "Torpedo.png")
+    let torpedo = SKSpriteNode(imageNamed: "Torpedo-1.png")
     let motionManager = CMMotionManager()
     var gameTimer: Timer?
     let scoreLabel = SKLabelNode(fontNamed: "AvenirNextCondensed-Bold")
@@ -24,7 +24,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     let music = SKAudioNode(fileNamed: "cyborg-ninja.mp3")
     let Jet = SKEmitterNode(fileNamed: "JetStream.sks")
-    
+    let torpedoJet = SKEmitterNode(fileNamed: "TorpedoStream.sks")
     
     
     
@@ -67,13 +67,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         Jet?.zPosition = 1
         addChild(Jet!)
         
+        torpedoJet?.zPosition = 0.5
+        
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // this method is called when the user touches the screen
         
-        torpedoLaunch()
         
+        if player.parent != nil {
+            torpedoLaunch()
+        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -118,9 +123,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         Jet?.particlePosition.x = player.position.x - 45
         Jet?.particlePosition.y = player.position.y - 10
         
-        if torpedo.position.x > 700 {
+        if torpedo.position.x > 1200 {
             torpedo.removeFromParent()
+            torpedoJet?.removeFromParent()
         }
+        
+        torpedoJet?.particlePosition.x = torpedo.position.x
+        torpedoJet?.particlePosition.y = torpedo.position.y
+        
         
     }
     
@@ -149,9 +159,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if nodeA == player {
             playerHit(nodeB)
         } else if nodeA == torpedo {
-            
+            torpedoHit()
         } else {
-//            playerHit(nodeA)
+            //            playerHit(nodeA)
+            torpedoHit()
         }
     }
     
@@ -193,15 +204,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             torpedo.position.x = player.position.x + 100
             torpedo.position.y = player.position.y
             torpedo.physicsBody?.categoryBitMask = 3
+            torpedo.zPosition = 2
             addChild(torpedo)
             torpedo.scale(to: CGSize(width: 40, height: 30))
-            torpedo.physicsBody?.velocity = CGVector(dx: 300, dy: 0)
+            torpedo.physicsBody?.velocity = CGVector(dx: 600, dy: 0)
+            
+            addChild(torpedoJet!)
         }
         
     }
     
-    
-    
+    func torpedoHit() {
+        
+        
+        if let boom = SKEmitterNode(fileNamed: "torpedoExplosion.sks") {
+            boom.position = torpedo.position
+            boom.zPosition = 3
+            addChild(boom)
+        }
+        torpedoJet?.removeFromParent()
+        torpedo.removeFromParent()
+        
+    }
     
 }
-
