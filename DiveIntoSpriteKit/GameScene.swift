@@ -143,6 +143,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         sprite.zPosition = 1
         addChild(sprite)
         
+        
         sprite.physicsBody = SKPhysicsBody(texture: sprite.texture!, size: sprite.size)
         sprite.physicsBody?.velocity = CGVector(dx: -500, dy: 0)
         sprite.physicsBody?.linearDamping = 0
@@ -150,6 +151,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         sprite.physicsBody?.categoryBitMask = 0
         
     }
+    
+    
+    
     
     func didBegin(_ contact: SKPhysicsContact) {
         guard let nodeA = contact.bodyA.node else { return }
@@ -200,6 +204,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //create torpedo
         if torpedo.parent == nil {
             
+            let spew = SKEmitterNode(fileNamed: "TorpedoLaunch.sks")
+            spew?.particlePosition.x = player.position.x + 30
+            spew?.particlePosition.y = player.position.y
+            
+            spew?.zPosition = 7
+            addChild(spew!)
+            
             torpedo.physicsBody = SKPhysicsBody(texture: torpedo.texture!, size: torpedo.size)
             torpedo.position.x = player.position.x + 100
             torpedo.position.y = player.position.y
@@ -210,6 +221,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             torpedo.physicsBody?.velocity = CGVector(dx: 600, dy: 0)
             
             addChild(torpedoJet!)
+            
+            
         }
         
     }
@@ -222,8 +235,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             boom.zPosition = 3
             addChild(boom)
         }
+        
         torpedoJet?.removeFromParent()
         torpedo.removeFromParent()
+        
         
     }
     
