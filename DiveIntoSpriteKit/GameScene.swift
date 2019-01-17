@@ -148,6 +148,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         sprite.physicsBody?.velocity = CGVector(dx: -500, dy: 0)
         sprite.physicsBody?.linearDamping = 0
         sprite.physicsBody?.contactTestBitMask = 1
+        sprite.physicsBody?.contactTestBitMask = 0
         sprite.physicsBody?.categoryBitMask = 0
         
     }
@@ -228,7 +229,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func torpedoHit() {
-        
         
         if let boom = SKEmitterNode(fileNamed: "torpedoExplosion.sks") {
             boom.position = torpedo.position
